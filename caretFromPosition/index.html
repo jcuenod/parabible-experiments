@@ -1,0 +1,219 @@
+<html>
+<head>
+	<style>
+		body {
+			font-size: 30px;
+			width: 800px;
+			margin: auto;
+			direction: rtl;
+			cursor: pointer;
+			line-height: 140%;
+			font-family: SBL Hebrew;
+		}
+		.verse {
+			position: relative;
+			color: red;
+			font-size: 15px;
+			top: -10px;
+			font-weight: bold;
+			padding: 3px;
+		}
+		#highlight {
+			position: absolute;
+			background: yellow;
+			z-index: -1;
+		}
+	</style>
+</head>
+<body>
+	<div id="container"><span id="main"></span></div>
+	<div id="highlight"></div>
+	<script>
+		const content = [
+			{"v": "1"},
+			{"w": "בְּ", "t": ""},
+			{"w": "רֵאשִׁ֖ית", "t": " "},
+			{"w": "בָּרָ֣א", "t": " "},
+			{"w": "אֱלֹהִ֑ים", "t": " "},
+			{"w": "אֵ֥ת", "t": " "},
+			{"w": "הַ", "t": ""},
+			{"w": "שָּׁמַ֖יִם", "t": " "},
+			{"w": "וְ", "t": ""},
+			{"w": "אֵ֥ת", "t": " "},
+			{"w": "הָ", "t": ""},
+			{"w": "אָֽרֶץ", "t": "׃ "},
+			{"v": "2"},
+			{"w": "וְ", "t": ""},
+			{"w": "הָ", "t": ""},
+			{"w": "אָ֗רֶץ", "t": " "},
+			{"w": "הָיְתָ֥ה", "t": " "},
+			{"w": "תֹ֨הוּ֙", "t": " "},
+			{"w": "וָ", "t": ""},
+			{"w": "בֹ֔הוּ", "t": " "},
+			{"w": "וְ", "t": ""},
+			{"w": "חֹ֖שֶׁךְ", "t": " "},
+			{"w": "עַל", "t": "־"},
+			{"w": "פְּנֵ֣י", "t": " "},
+			{"w": "תְהֹ֑ום", "t": " "},
+			{"w": "וְ", "t": ""},
+			{"w": "ר֣וּחַ", "t": " "},
+			{"w": "אֱלֹהִ֔ים", "t": " "},
+			{"w": "מְרַחֶ֖פֶת", "t": " "},
+			{"w": "עַל", "t": "־"},
+			{"w": "פְּנֵ֥י", "t": " "},
+			{"w": "הַ", "t": ""},
+			{"w": "מָּֽיִם", "t": "׃ "},
+			{"v": "3"},
+			{"w": "וַ", "t": ""},
+			{"w": "יֹּ֥אמֶר", "t": " "},
+			{"w": "אֱלֹהִ֖ים", "t": " "},
+			{"w": "יְהִ֣י", "t": " "},
+			{"w": "אֹ֑ור", "t": " "},
+			{"w": "וַֽ", "t": ""},
+			{"w": "יְהִי", "t": "־"},
+			{"w": "אֹֽור", "t": "׃ "},
+			{"v": "4"},
+			{"w": "וַ", "t": ""},
+			{"w": "יַּ֧רְא", "t": " "},
+			{"w": "אֱלֹהִ֛ים", "t": " "},
+			{"w": "אֶת", "t": "־"},
+			{"w": "הָ", "t": ""},
+			{"w": "אֹ֖ור", "t": " "},
+			{"w": "כִּי", "t": "־"},
+			{"w": "טֹ֑וב", "t": " "},
+			{"w": "וַ", "t": ""},
+			{"w": "יַּבְדֵּ֣ל", "t": " "},
+			{"w": "אֱלֹהִ֔ים", "t": " "},
+			{"w": "בֵּ֥ין", "t": " "},
+			{"w": "הָ", "t": ""},
+			{"w": "אֹ֖ור", "t": " "},
+			{"w": "וּ", "t": ""},
+			{"w": "בֵ֥ין", "t": " "},
+			{"w": "הַ", "t": ""},
+			{"w": "חֹֽשֶׁךְ", "t": "׃ "},
+			{"v": "5"},
+			{"w": "וַ", "t": ""},
+			{"w": "יִּקְרָ֨א", "t": " "},
+			{"w": "אֱלֹהִ֤ים", "t": "׀ "},
+			{"w": "לָ", "t": ""},
+			{"w": "", "t": ""},
+			{"w": "אֹור֙", "t": " "},
+			{"w": "יֹ֔ום", "t": " "},
+			{"w": "וְ", "t": ""},
+			{"w": "לַ", "t": ""},
+			{"w": "", "t": ""},
+			{"w": "חֹ֖שֶׁךְ", "t": " "},
+			{"w": "קָ֣רָא", "t": " "},
+			{"w": "לָ֑יְלָה", "t": " "},
+			{"w": "וַֽ", "t": ""},
+			{"w": "יְהִי", "t": "־"},
+			{"w": "עֶ֥רֶב", "t": " "},
+			{"w": "וַֽ", "t": ""},
+			{"w": "יְהִי", "t": "־"},
+			{"w": "בֹ֖קֶר", "t": " "},
+			{"w": "יֹ֥ום", "t": " "},
+			{"w": "אֶחָֽד", "t": "׃ פ "},
+		].map(e => {
+			// add zwnbs to the first character of every word...
+			if ("w" in e) {
+				e.w = "\uFEFF" + e.w
+			}
+			return e
+		})
+
+		const $highlight = document.getElementById('highlight')
+		const cumulative_content_offsets = []
+		cumulative_content_offsets.push({offset: 0, type: "first"})
+		$main = document.querySelector("#main")
+		$main.innerHTML = content.map((c, i) => {
+			if ("v" in c) {
+				const this_offset = 2 /*for the spaces*/ + (c.v + "").length
+				cumulative_content_offsets.push({
+					offset: cumulative_content_offsets[cumulative_content_offsets.length - 1].offset + this_offset,
+					type: "verse"
+				})
+				return ` <span class="verse">${c.v}</span>&#8239;`
+			}
+			else {
+				cumulative_content_offsets.push({
+					offset: cumulative_content_offsets[cumulative_content_offsets.length - 1].offset + c.w.length,
+					type: "word",
+					index: i
+				})
+				cumulative_content_offsets.push({
+					offset: cumulative_content_offsets[cumulative_content_offsets.length - 1].offset + c.t.length,
+					type: "trailer",
+					index: i
+				})
+				// cumulative_content_offsets.push(cumulative_content_offsets[cumulative_content_offsets.length - 1] + to_return.length)
+				return `${c.w}${c.t}`
+			}
+		}).join("")
+
+		$child_nodes = Array.from($main.childNodes)
+		child_node_lengths = $child_nodes.map(c => c.textContent.length)
+
+		document.addEventListener("click", e => {
+			const windowSelection = window.getSelection()
+			const $anchor   = windowSelection.anchorNode
+			const $parent   = $anchor.parentElement
+
+			// Only do this if the event is happening on the right dom element
+			if ($parent !== $main)
+				return
+
+			const index = $child_nodes.indexOf($anchor)
+			const cumulative_previous_node_offset = child_node_lengths.slice(0, index).reduce((a,v) => a + v, 0)
+			const total_offset_without_adjustment = cumulative_previous_node_offset + windowSelection.anchorOffset
+
+			const actualCursorPosition = windowSelection
+											.getRangeAt(0)
+											.getClientRects()[0]
+											.left
+			const offset_adjustment = actualCursorPosition < e.clientX ? -1 : 0
+			const total_offset = total_offset_without_adjustment + offset_adjustment
+// throw "we calculate where cursor is relative to the click position (and possibly pay attention to whether its rtl or ltr text) and then adjust the node we grab..."
+
+			const w = cumulative_content_offsets.find(e => e.offset > total_offset)
+
+			if (w.type === "word") {
+				console.log(windowSelection)
+				console.log(cumulative_previous_node_offset)
+				console.log(w)
+				console.log(content[w.index])
+				console.log(content[w.index].w.length)
+				const clicked_word_offset_in_child_node = w.offset - cumulative_previous_node_offset - content[w.index].w.length
+				extendSelection($anchor, clicked_word_offset_in_child_node, content[w.index].w.length)
+			}
+		})
+
+		const extendSelection = (anchor, start, length) => {
+			var range = document.createRange()
+			range.setStart(anchor, start)
+			range.setEnd(anchor, start + length)
+			const clientRect = range.getBoundingClientRect();
+			$highlight.style.left = `${clientRect.x}px`;
+			$highlight.style.top = `${clientRect.y}px`;
+			$highlight.style.width = `${clientRect.width}px`;
+			$highlight.style.height = `${clientRect.height}px`;
+
+			// modify() works on the focus of the selection
+			// var endNode = sel.focusNode, endOffset = sel.focusOffset;
+			// sel.collapse(sel.anchorNode, sel.anchorOffset);
+			
+			// var direction = [];
+			// if (false) {
+			// 	direction = ['backward', 'forward'];
+			// } else {
+			// 	direction = ['forward', 'backward'];
+			// }
+
+			// sel.modify("move", direction[0], "character");
+			// sel.modify("move", direction[1], "word");
+			// sel.extend(endNode, endOffset);
+			// sel.modify("extend", direction[1], "character");
+			// sel.modify("extend", direction[0], "word")
+		}
+	</script>
+</body>
+</html>
