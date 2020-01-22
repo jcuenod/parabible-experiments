@@ -9,6 +9,7 @@
 			cursor: pointer;
 			line-height: 140%;
 			font-family: SBL Hebrew;
+			background: white;
 		}
 		.verse {
 			position: relative;
@@ -20,16 +21,21 @@
 		}
 		#highlight {
 			position: absolute;
-			background: yellow;
-			z-index: -1;
+			background: rgb(0, 120, 215);
+			z-index: 1;
+			/*transition: 80ms ease-in-out left,
+						80ms ease-in-out right,
+						80ms ease-in-out top,
+						80ms ease-in-out bottom;*/
+			mix-blend-mode: screen;
 		}
 	</style>
 </head>
 <body>
-	<div id="container"><span id="main"></span></div>
+	<div id="main"></div>
 	<div id="highlight"></div>
 	<script>
-		/*const content = [
+		const content = [
 			{"v": "1"},
 			{"w": "בְּ", "t": ""},
 			{"w": "רֵאשִׁ֖ית", "t": " "},
@@ -119,8 +125,8 @@
 				e.w = "\uFEFF" + e.w
 			}
 			return e
-		})*/
-		const content = [
+		})
+		/*const content = [
 			{"v": "1"},
 			{"w": "Βίβλος", "t":" "},
 			{"w": "γενέσεως", "t":" "},
@@ -232,7 +238,7 @@
 				e.w = "\uFEFF" + e.w
 			}
 			return e
-		})
+		})*/
 
 		const $highlight = document.getElementById('highlight')
 		const cumulative_content_offsets = []
@@ -305,10 +311,10 @@
 			range.setStart(anchor, start)
 			range.setEnd(anchor, start + length)
 			const clientRect = range.getBoundingClientRect();
-			$highlight.style.left = `${clientRect.x}px`;
-			$highlight.style.top = `${clientRect.y + window.scrollY}px`;
-			$highlight.style.width = `${clientRect.width}px`;
-			$highlight.style.height = `${clientRect.height}px`;
+			$highlight.style.left = `${clientRect.x -1}px`;
+			$highlight.style.top = `${clientRect.y + window.scrollY -2}px`;
+			$highlight.style.width = `${clientRect.width + 2}px`;
+			$highlight.style.height = `${clientRect.height + 4}px`;
 
 			// modify() works on the focus of the selection
 			// var endNode = sel.focusNode, endOffset = sel.focusOffset;
