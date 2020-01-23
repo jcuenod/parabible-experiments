@@ -9,7 +9,7 @@
 			cursor: pointer;
 			line-height: 140%;
 			font-family: SBL Hebrew;
-			background: white;
+			/*background: white; -- needed for mix-blend-mode which doesn't seem to work in chrome*/
 		}
 		.verse {
 			position: relative;
@@ -21,14 +21,20 @@
 		}
 		#highlight {
 			position: absolute;
-			background: rgb(0, 120, 215);
-			z-index: 1;
-			/*transition: 80ms ease-in-out left,
+			background: rgba(0, 120, 215, 0.3);
+			z-index: -1;
+			transition: 80ms ease-in-out left,
 						80ms ease-in-out right,
 						80ms ease-in-out top,
-						80ms ease-in-out bottom;*/
-			mix-blend-mode: screen;
+						80ms ease-in-out bottom;
+			border-radius: 6px;
 		}
+		/*#highlight {
+			position: absolute;
+			background: rgb(0, 120, 215);
+			z-index: 1;
+			mix-blend-mode: screen;
+		}*/
 	</style>
 </head>
 <body>
@@ -295,25 +301,24 @@
 			const w = cumulative_content_offsets.find(e => e.offset > total_offset)
 
 			if (w.type === "word") {
-				console.log(windowSelection)
-				console.log(cumulative_previous_node_offset)
-				console.log(w)
-				console.log(content[w.index])
-				console.log(content[w.index].w.length)
+				console.log(w.index)
+				console.log(content[w.index].w)
 				const clicked_word_offset_in_child_node = w.offset - cumulative_previous_node_offset - content[w.index].w.length
 				extendSelection($anchor, clicked_word_offset_in_child_node, content[w.index].w.length)
 			}
 		})
 
-		const extendSelection = (anchor, start, length) => {
+		const extendSelection = ($anchor, start, length) => {
 			var range = document.createRange()
-			range.setStart(anchor, start)
-			range.setEnd(anchor, start + length)
+			range.setStart($anchor, start)
+			range.setEnd($anchor, start + length)
 			const clientRect = range.getBoundingClientRect();
-			$highlight.style.left = `${clientRect.x + window.scrollX -1}px`;
-			$highlight.style.top = `${clientRect.y + window.scrollY -2}px`;
-			$highlight.style.width = `${clientRect.width + 2}px`;
-			$highlight.style.height = `${clientRect.height + 4}px`;
+			Object.assign($highlight.style, {
+				left: clientRect.x + window.scrollX -3,
+				top: clientRect.y + window.scrollY -3,
+				width: clientRect.width + 6,
+				height: clientRect.height + 6
+			})
 		}
 	</script>
 </body>
