@@ -291,7 +291,6 @@
 											.left
 			const offset_adjustment = actualCursorPosition < e.clientX ? -1 : 0
 			const total_offset = total_offset_without_adjustment + offset_adjustment
-// throw "we calculate where cursor is relative to the click position (and possibly pay attention to whether its rtl or ltr text) and then adjust the node we grab..."
 
 			const w = cumulative_content_offsets.find(e => e.offset > total_offset)
 
@@ -311,27 +310,10 @@
 			range.setStart(anchor, start)
 			range.setEnd(anchor, start + length)
 			const clientRect = range.getBoundingClientRect();
-			$highlight.style.left = `${clientRect.x -1}px`;
+			$highlight.style.left = `${clientRect.x + window.scrollX -1}px`;
 			$highlight.style.top = `${clientRect.y + window.scrollY -2}px`;
 			$highlight.style.width = `${clientRect.width + 2}px`;
 			$highlight.style.height = `${clientRect.height + 4}px`;
-
-			// modify() works on the focus of the selection
-			// var endNode = sel.focusNode, endOffset = sel.focusOffset;
-			// sel.collapse(sel.anchorNode, sel.anchorOffset);
-			
-			// var direction = [];
-			// if (false) {
-			// 	direction = ['backward', 'forward'];
-			// } else {
-			// 	direction = ['forward', 'backward'];
-			// }
-
-			// sel.modify("move", direction[0], "character");
-			// sel.modify("move", direction[1], "word");
-			// sel.extend(endNode, endOffset);
-			// sel.modify("extend", direction[1], "character");
-			// sel.modify("extend", direction[0], "word")
 		}
 	</script>
 </body>
