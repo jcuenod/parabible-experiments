@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>DOM Test</title>
+	<meta name="description" content="How to make words clickable without polluting the DOM">
+	<meta name="author" content="James Cuénod">
+
+	<script type="text/javascript" src="chapter.js"></script>
+</head>
+
+<body>
+	<style>
+		#app {
+			direction: rtl;
+			display: block;
+			width: 960px;
+			font-family: SBL Biblit;
+			font-size: 36px;
+			margin: auto;
+		}
+
+		#highlight {
+			position: absolute;
+			display: inline-block;
+			background-color: rgba(200, 255, 255, 0.7);
+			cursor: pointer;
+			border-radius: 2px;
+			z-index: -1
+		}
+
+		.verse_number {
+			color: red;
+			font-size: 12px;
+			top: -20px;
+			position: relative;
+			font-weight: bold;
+		}
+	</style>
+	<div id="app"></div>
+	<span id="highlight" style=""></span>
+	<script language="javascript">
+		const MARGIN = 2
+		const words = []
+		chapter.text.forEach(verse => {
+			words.push({verse: verse.rid % 1000})
+			verse.wlc.forEach(word => {
+				word.forEach(bit => {
+					words.push(bit)
+				})
+			})
+		})
+		const $app = document.querySelector("#app")
+		const app_rects = $app.getBoundingClientRect()
+		const $highlight = document.querySelector("#highlight")
+
+		$app.innerHTML = words.map(w => {
+			if ("verse" in w) {
+				return `<span class="verse_number">${w.verse}</span>`
+			}
+			return w.word + w.trailer
+		}).join("")
+
+		let offsetTally = 0
+		let $currentChild = null
+		const positions = []
+		const r = document.createRange()
+		words.forEach((w, i) => {
+			if ("verse" in w) {
+				offsetTally = 0
+				$currentChild = $currentChild?.nextSibling?.nextSibling || $app.firstChild.nextSibling
+				return
+			}
+			r.setStart($currentChild, offsetTally)
+			r.setEnd($currentChild, offsetTally + w.word.length)
+			positions[i] = r.getBoundingClientRect()
+			positions[i].y = positions[i].y + window.scrollY
+			offsetTally += w.word.length + w.trailer.length
+		})
+
+		let activeWord = -1
+		const registerActiveWord = index => {
+			activeWord = index
+			const w = positions[index]
+			$highlight.style.display = "inline-block"
+			$highlight.style.left = (w.x - MARGIN) + "px"
+			$highlight.style.width = (w.width + MARGIN * 2) + "px"
+			$highlight.style.top = (w.y - MARGIN) + "px"
+			$highlight.style.height = (w.height + MARGIN * 2) + "px"
+			$app.style.cursor = "pointer"
+		}
+		const deRegisterActiveWord = () => {
+			$highlight.style.display = "none"
+			$app.style.cursor = "inherit"
+			activeWord = -1
+		}
+
+		$app.addEventListener("mousemove", e => {
+			const w = positions.findIndex(p =>
+				p &&
+				e.x > p.x &&
+				e.x < p.x + p.width &&
+				e.y > p.y - window.scrollY &&
+				e.y < p.y + p.height - window.scrollY
+			)
+			if (w > -1)
+				registerActiveWord(w)
+			else
+				deRegisterActiveWord()
+		})
+
+		$app.addEventListener("click", e => {
+			if (activeWord > -1)
+				console.log(words[activeWord])
+		})
+	</script>
+</body>
+
+</html>
