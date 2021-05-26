@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="Starter Snowpack App" />
+	<style>
+		body {
+			margin: 0;
+			width: 100vw;
+			height: 100vh;
+		}
+
+		.container {
+			display: flex;
+		}
+
+		.tab {
+			position: relative;
+			flex: 1;
+			padding: 1.25rem;
+			cursor: pointer;
+			text-align: center;
+			background: #efefef;
+			font-weight: bold;
+			user-select: none;
+		}
+
+		.tab:hover {
+			background: #ddd;
+		}
+
+		#placeholder {
+			position: absolute;
+			z-index: 1;
+			background-color: #88f;
+			opacity: 0.3;
+			border-radius: 2px;
+			pointer-events: none;
+			transition: top 150ms ease,
+				left 150ms ease,
+				width 150ms ease,
+				height 150ms ease;
+		}
+	</style>
+</head>
+
+<body class="bg-gray-50">
+	<div id="root">
+		<div class="container">
+			<div class="tab receiver" draggable=true>Tab 1</div>
+			<div class="tab receiver" draggable=true>Tab 2</div>
+			<div class="tab receiver" draggable=true>Tab 3</div>
+			<div class="tab receiver" draggable=true>Tab 4</div>
+			<div class="tab receiver" draggable=true>Tab 5</div>
+		</div>
+	</div>
+	<div id="placeholder"></div>
+	<script language="javascript">
+		const placeholderEl = document.querySelector("#placeholder")
+		const setPlaceHolderPosition = (top, left, width, height) => {
+			placeholderEl.style.top = top + "px"
+			placeholderEl.style.left = left + "px"
+			placeholderEl.style.width = width + "px"
+			placeholderEl.style.height = height + "px"
+		}
+
+		const elFromTarget = target => target.nodeName === "#text"
+			? target.parentElement
+			: target
+		const isLeft = (mouseX, elementX, elementWidth) =>
+			mouseX - elementX < (elementWidth / 2)
+		const isTop = (mouseY, elementY, elementHeight) =>
+			mouseY - elementY < (elementHeight / 2)
+
+		document.querySelectorAll(".receiver").forEach(receiver => {
+			receiver.addEventListener("dragover", e => {
+				e.cancelBubble = true
+				e.preventDefault()
+				const el = elFromTarget(e.target)
+				let left = 0
+				if (isLeft(e.pageX, el.offsetLeft, el.clientWidth)) {
+					console.log("left")
+					left = el.offsetLeft - 5
+				}
+				else {
+					console.log("right")
+					left = el.offsetLeft + el.clientWidth - 5
+				}
+				setPlaceHolderPosition(el.offsetTop, left, "10", el.clientHeight)
+			})
+		})
+		document.addEventListener("dragover", e => {
+			e.cancelBubble = true
+			e.preventDefault()
+			const el = elFromTarget(e.target)
+			// Get nearest side by calculating angle of mouse to center of container
+			// Position of cursor relative to a (0, 0) container center
+			const x = e.pageX - (el.offsetLeft + (el.clientWidth / 2))
+			const y = e.pageY - (el.offsetTop + (el.clientHeight / 2))
+			// * atan2 returns the angle in the plane (in radians) between the positive x-axis and the ray from (0,0) to the point (x,y)
+			const theta = Math.atan2(y, x) * 180 / Math.PI
+
+			const angleToCorner = Math.atan2(el.clientHeight, el.clientWidth) * 180 / Math.PI
+
+			let newPos = { top: 0, left: 0, width: 0, height: 0 }
+			if (Math.abs(theta) < angleToCorner ||
+				Math.abs(theta) > 180 - angleToCorner) {
+				// Left / Right
+				newPos = {
+					top: el.offsetTop,
+					width: (el.clientWidth / 2),
+					height: el.clientHeight,
+					left: Math.abs(theta) > 90
+						? el.offsetLeft
+						: el.offsetLeft + (el.clientWidth / 2)
+				}
+			}
+			else {
+				// Top / Bottom
+				newPos = {
+					left: el.offsetLeft,
+					width: el.clientWidth,
+					height: (el.clientHeight / 2),
+					top: theta < 0
+						? el.offsetTop
+						: el.offsetTop + (el.clientHeight / 2)
+				}
+			}
+			setPlaceHolderPosition(
+				newPos.top,
+				newPos.left,
+				newPos.width,
+				newPos.height)
+		}, false)
+		document.addEventListener("dragenter", e => {
+			const el = elFromTarget(e.target)
+			el.classList.add("receiveDrag")
+		}, false)
+		document.addEventListener("dragexit", e => {
+			console.log(e.target.nodeName)
+			const el = elFromTarget(e.target)
+			el.classList.remove("receiveDrag")
+		}, false)
+		document.addEventListener("drop", e => {
+			const el = elFromTarget(e.target)
+			el.classList.remove("receiveDrag")
+			console.log(e)
+		}, false)
+	</script>
+</body>
+
+</html>
