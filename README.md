@@ -30,3 +30,9 @@ This does a great job of getting rid of the dom nodes. It stores the positions o
 <https://jcuenod.github.io/parabible-experiments/draggable/>
 
 Experiment with a concept where a tab can be dragged to a new location in a tabbar or, alternatively, into a new split panel.
+
+**6. Doric Framework UI**
+
+<https://jcuenod.github.io/parabible-experiments/doric-framework/dist>
+
+Doric Framework is a column-based widget layout for Vue. See [here](https://www.npmjs.com/package/doric-framework).
