@@ -33,6 +33,6 @@ Experiment with a concept where a tab can be dragged to a new location in a tabb
 
 **6. Doric Framework UI**
 
-<https://jcuenod.github.io/parabible-experiments/doric-framework/dist>
+<https://jcuenod.github.io/parabible-experiments/doric-parabible/dist>
 
 Doric Framework is a column-based widget layout for Vue. See [here](https://www.npmjs.com/package/doric-framework).
