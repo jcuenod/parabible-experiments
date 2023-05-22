@@ -12,5 +12,13 @@ const workspace = ref([[
 </script>
 
 <template>
-  <DoricFramework :widgets="widgets" :workspace="workspace" :initial-state="[]" />
+  <div id="app">
+    <DoricFramework :widgets="widgets" :workspace="workspace" :initial-state="[]" />
+  </div>
 </template>
+
+<style scoped>
+div {
+  height: 100vh;
+}
+</style>
