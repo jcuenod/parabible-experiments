@@ -103,4 +103,8 @@ const setActiveWordWithModuleId = (moduleId: number, wid: number) => {
 tbody tr:hover {
     background-color: #f8f8f8;
 }
+
+td {
+    padding: 0.5rem;
+}
 </style>

@@ -55,7 +55,7 @@ const submit = (event: Event) => {
 
 <template>
     <div>
-        <input type="text" v-model="passageReference.value" @submit="submit" />
+        <input type="text" v-model="passageReference.value" @keydown.enter="submit" />
         <button @click="submit">Go!</button>
     </div>
     <div>{{ impliedReference }}</div>

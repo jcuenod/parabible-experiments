@@ -9,6 +9,15 @@ const props = defineProps({
 })
 const emit = defineEmits(["activeWord"])
 
+const isHebrew = (text: string) => {
+    const hebrew = /[\u0590-\u05FF\uFB1D-\uFB4F]/
+    return hebrew.test(text)
+}
+const isGreek = (text: string) => {
+    const greek = /[\u0370-\u03FF]/
+    return greek.test(text)
+}
+
 type WordArray = {
     wid: number,
     leader: string,
@@ -16,21 +25,34 @@ type WordArray = {
     trailer: string,
 }[]
 
+type Language = "hebrew" | "greek" | "latinish"
+const LANGUAGES: { [key: string]: Language } = {
+    HEBREW: "hebrew",
+    GREEK: "greek",
+    LATINISH: "latinish",
+}
+const RtlLanguages = new Set([LANGUAGES.HEBREW])
+const isRtl = (language: Language) => RtlLanguages.has(language)
+const language = ref<Language>(LANGUAGES.LATINISH)
 const htmlString = ref("")
 const jsonString = ref<WordArray>([])
 
 const parsePropText = (text: string) => {
     try {
-        const parsed = JSON.parse(text)
-        parsed as WordArray
+        const parsed: WordArray = JSON.parse(text)
         jsonString.value = parsed
         htmlString.value = ""
-        console.log(parsed)
+        const t = parsed.map(({ leader, text, trailer }) => `${leader}${text}${trailer}`).join("")
+        language.value = isHebrew(t)
+            ? LANGUAGES.HEBREW
+            : isGreek(text) ? LANGUAGES.GREEK : LANGUAGES.LATINISH
     }
     catch (error) {
         htmlString.value = text
         jsonString.value = []
-        console.log(text)
+        language.value = isHebrew(text)
+            ? LANGUAGES.HEBREW
+            : isGreek(text) ? LANGUAGES.GREEK : LANGUAGES.LATINISH
     }
 }
 
@@ -42,19 +64,31 @@ parsePropText(props.text)
 </script>
 
 <template>
-    <div>
+    <div :class="language">
         <div v-if="htmlString" v-html="htmlString"></div>
         <div v-else>
-            <template v-for="word in jsonString" :key="word.wid">
-                {{ word.leader }}
-                <button class="word" @click="emit('activeWord', word.wid)">{{ word.text }}</button>
-                {{ word.trailer }}
-            </template>
+            <template v-for="word in jsonString" :key="word.wid">{{ word.leader }}<button class="word"
+                    @click="emit('activeWord', word.wid)">{{ word.text }}</button>{{ word.trailer }}</template>
         </div>
     </div>
 </template>
 
 <style scoped>
+.hebrew {
+    direction: rtl;
+    font-family: SBL Biblit;
+    font-size: 1.4rem;
+}
+
+.greek {
+    font-family: SBL Biblit;
+    font-size: 1.2rem;
+}
+
+.latinish {
+    font-size: 1rem;
+}
+
 .word:hover {
     /* subtle, muted blue */
     color: #3b82f6;
