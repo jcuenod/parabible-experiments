@@ -15,7 +15,12 @@ const props = defineProps({
 const setPassageReference = props.useDoricOutput("passageReference")
 const passageReference = props.useDoricInput("passageReference")
 
-const refToString = (ref) => {
+type Reference = {
+    book: string,
+    chapter?: number,
+    verse?: number,
+}
+const refToString = (ref: Reference) => {
     if (ref) {
         if (ref.verse) {
             return `${ref.book} ${ref.chapter}:${ref.verse}`
@@ -30,12 +35,12 @@ const refToString = (ref) => {
 }
 
 const impliedReference = computed(() => {
-    const ref = rp.parse(passageReference.value)
+    const ref = rp.parse(passageReference.value) as Reference
     return ref ? refToString(ref) : ""
 })
 
 const submit = (event: Event) => {
-    const ref = rp.parse(passageReference.value)
+    const ref = rp.parse(passageReference.value) as Reference
     if (ref) {
         if (!ref.verse) {
             ref.verse = 1
@@ -55,8 +60,9 @@ const submit = (event: Event) => {
 
 <template>
     <div>
-        <input type="text" v-model="passageReference.value" @keydown.enter="submit" />
-        <button @click="submit">Go!</button>
+        <input
+            class="block w-full px-3 py-2 transition duration-100 ease-in-out border rounded shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed text-black placeholder-gray-400 bg-white border-gray-300 focus:border-blue-500"
+            type="text" v-model="passageReference.value" @keydown.enter="submit" placeholder="Enter a reference" />
     </div>
-    <div>{{ impliedReference }}</div>
+    <div class="mt-2 text-gray-400 uppercase text-xs font-bold">{{ impliedReference || "..." }}</div>
 </template>
