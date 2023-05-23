@@ -1,3 +1,11 @@
+# Doric-Parabible
+
+This repo is an experimental UI built using the Vue3
+[doric-framework](https://www.npmjs.com/package/doric-framework) and the
+parabible dev API.
+
+# Original README:
+
 # Vite + Vue 3 + Typescript + Tailwind Starter
 
 Simple, opinionated, **fully typed**, and **production-ready** project template for Vite.
