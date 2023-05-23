@@ -75,7 +75,7 @@ watch(() => activeWord.value, () => {
     </div>
 </template>
 
-<style>
+<style scoped>
 table {
     width: 100%;
 }
