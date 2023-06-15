@@ -89,6 +89,20 @@ parsePropText(props.text)
     font-size: 1rem;
 }
 
+button.word {
+    /* remove button styles */
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+}
+
+button.word:focus {
+    /* remove button focus style */
+    box-shadow: none;
+}
+
 .word:hover {
     /* subtle, muted blue */
     color: #3b82f6;
