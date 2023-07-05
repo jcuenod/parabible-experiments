@@ -1,24 +1,14 @@
 <script setup lang="ts">
 import { watch, ref, computed } from "vue"
+import { useDoricOutput, useDoricInput } from 'doric-framework';
 import VerseText from "./helpers/VerseText.vue"
 import ReferenceParser from "referenceparser"
 const rp = new ReferenceParser()
 
-const props = defineProps({
-    useDoricInput: {
-        type: Function,
-        required: true,
-    },
-    useDoricOutput: {
-        type: Function,
-        required: true,
-    },
-})
+const setActiveWord = useDoricOutput("activeWord")
 
-const setActiveWord = props.useDoricOutput("activeWord")
-
-const passageReference = props.useDoricInput("passageReference")
-const activeModules = props.useDoricInput("activeModules")
+const passageReference = useDoricInput("passageReference")
+const activeModules = useDoricInput("activeModules")
 const actualModules = computed(() => {
     if (activeModules.value) {
         return JSON.parse(activeModules.value)
@@ -30,6 +20,9 @@ const queryUrl = computed(() => {
         return ""
     }
     const reference = rp.parse(passageReference.value)
+    if (!reference) {
+        return ""
+    }
     const endpoint = "https://dev.parabible.com/api/v2/text"
     const query = new URLSearchParams({
         modules: actualModules.value.map((m: { abbreviation: string }) => m.abbreviation).join(","),

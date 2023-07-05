@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { watch, ref } from "vue"
+import { useDoricInput } from 'doric-framework';
 import { features, values } from "@/assets/features.json"
 import { isInteger } from "lodash-es"
 
@@ -17,13 +18,7 @@ const friendlyValue = (key: string, value: string) => {
     return value
 }
 
-const props = defineProps({
-    useDoricInput: {
-        type: Function,
-        required: true,
-    }
-})
-const activeWord = props.useDoricInput("activeWord")
+const activeWord = useDoricInput("activeWord")
 
 type WordFeature = {
     [key: string]: string

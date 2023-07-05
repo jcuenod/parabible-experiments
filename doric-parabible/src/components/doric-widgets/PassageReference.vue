@@ -1,19 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue"
+import { useDoricOutput, useDoricInput } from 'doric-framework';
 import ReferenceParser from "referenceparser"
 const rp = new ReferenceParser()
-const props = defineProps({
-    useDoricOutput: {
-        type: Function,
-        required: true,
-    },
-    useDoricInput: {
-        type: Function,
-        required: true,
-    }
-})
-const setPassageReference = props.useDoricOutput("passageReference")
-const passageReference = props.useDoricInput("passageReference")
+
+const setPassageReference = useDoricOutput("passageReference")
+const passageReference = useDoricInput("passageReference")
 
 type Reference = {
     book: string,

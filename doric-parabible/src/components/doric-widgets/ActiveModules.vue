@@ -1,18 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
+import { useDoricOutput, useDoricInput } from 'doric-framework';
 
-const props = defineProps({
-    useDoricOutput: {
-        type: Function,
-        required: true,
-    },
-    useDoricInput: {
-        type: Function,
-        required: true,
-    },
-})
-const setActiveModules = props.useDoricOutput("activeModules")
-const activeModules = props.useDoricInput("activeModules")
+const setActiveModules = useDoricOutput("activeModules")
+const activeModules = useDoricInput("activeModules")
 const activeModulesObj = computed(() => {
     if (activeModules.value) {
         return JSON.parse(activeModules.value)

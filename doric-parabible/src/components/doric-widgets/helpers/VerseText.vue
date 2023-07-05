@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { emit } from 'process'
 import { watch, ref } from 'vue'
 const props = defineProps({
     text: {
@@ -31,8 +30,8 @@ const LANGUAGES: { [key: string]: Language } = {
     GREEK: "greek",
     LATINISH: "latinish",
 }
-const RtlLanguages = new Set([LANGUAGES.HEBREW])
-const isRtl = (language: Language) => RtlLanguages.has(language)
+// const RtlLanguages = new Set([LANGUAGES.HEBREW])
+// const isRtl = (language: Language) => RtlLanguages.has(language)
 const language = ref<Language>(LANGUAGES.LATINISH)
 const htmlString = ref("")
 const jsonString = ref<WordArray>([])
